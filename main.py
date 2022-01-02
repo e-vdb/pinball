@@ -84,8 +84,23 @@ class Bar:
         if x1 - 10 > 0:
             self.can.move(self.bar, -10, 0)
 
+class Game:
+    def __init__(self, can, label):
+        self.can = can
+        self.label = label
+        self.bar = Bar(self.can)
+        self.ball = Ball(self.can, self.bar)
 
+    def new_game(self):
+        self.label.configure(text='Keep the ball in motion!!!')
+        self.ball.ball_in_motion = True
+        while self.ball.ball_in_motion:
+            self.ball.play()
+        if not self.ball.ball_in_motion:
+            self.game_over()
 
+    def game_over(self):
+        self.label.configure(text='Game over. Click on play to try again.')
 
 window = tk.Tk()
 window.title("Moving ball")
@@ -93,15 +108,15 @@ frame = tk.Frame(window)
 frame.pack(side=tk.TOP)
 can = tk.Canvas(window, bg='black', height=600, width=500)
 can.pack(side=tk.TOP, padx=5, pady=5)
+lab_Message=tk.Label(frame, text="Click on Play to start the game", fg="black", font='Helvetica 14')
+lab_Message.pack(side=tk.TOP)
 
-
-bar = Bar(can)
-ball = Ball(can, bar)
-btn = tk.Button(frame, text='Play', command=ball.play)
+'''bar = Bar(can)
+ball = Ball(can, bar)'''
+game = Game(can, lab_Message)
+btn = tk.Button(frame, text='Play', command=game.new_game)
 btn.pack()
-btn2 = tk.Button(frame, text='Stop', command=ball.stop)
-btn2.pack()
 can.update()
-window.bind("<Left>", bar.move_left)
-window.bind("<Right>", bar.move_right)
+window.bind("<Left>", game.bar.move_left)
+window.bind("<Right>", game.bar.move_right)
 window.mainloop()
