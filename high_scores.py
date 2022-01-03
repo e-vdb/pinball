@@ -25,8 +25,8 @@ class Score:
     def sort_by_score(self):
         self.df.sort_values(by='Time', ascending=False, inplace=True)
 
-    def add_score(self):
-        data = {'Player': 'Name', 'Time':5}
+    def add_score(self, name, time_game):
+        data = {'Player': name, 'Time': time_game}
         self.df = self.df.append(data, ignore_index=True)
         self.sort_by_score()
         self.df.to_csv(self.filepath, index=False)
