@@ -10,8 +10,9 @@ colors = ['red', 'green', 'yellow', 'blue']
 
 
 class Ball:
-    def __init__(self, can, bar):
+    def __init__(self, can, bar, refresh_Sec=Refresh_Sec):
         self.can = can
+        self.refresh_Sec = refresh_Sec
         self.radius = 25
         self.x = random.randint(5,490)
         self.y = 0
@@ -41,7 +42,7 @@ class Ball:
     def motion(self):
         self.can.move(self.ball, self.shift_x, self.shift_y)
         self.can.update()
-        time.sleep(Refresh_Sec)
+        time.sleep(self.refresh_Sec)
         ball_pos = self.can.coords(self.ball)
         bar_x1, bar_y1, bar_x2, bar_y2 = self.can.coords(self.bar.bar)
         x1, y1, x2, y2 = ball_pos
@@ -91,8 +92,8 @@ class Bar:
 
 class Player:
     def __init__(self):
-        self.enter_name()
         self.can_play = False
+        self.name = 'unknown'
 
     def enter_name(self):
         self.name_window = tk.Toplevel()
@@ -104,10 +105,12 @@ class Player:
         btn_enter_name = tk.Button(self.name_window, text="Enter",
                                    command=lambda: self.enter(ent_name))
         btn_enter_name.pack()
+
     def enter(self, name):
         self.name = name.get()
         self.name_window.destroy()
         self.can_play = True
+
 
 class Game:
     def __init__(self, window, can, label):
@@ -122,7 +125,15 @@ class Game:
         self.score.load_score()
         self.player = Player()
 
-    def new_game(self):
+    def set_difficulty_level(self, option):
+        if option == 0:
+            self.ball.refresh_Sec = 0.005
+        elif option == 1:
+            self.ball.refresh_Sec = 0.0025
+        else:
+            self.ball.refresh_Sec = 0.00175
+
+    def play(self):
         self.sw.Reset()
         if self.player.can_play:
             self.label.configure(text='Keep the ball in motion!!!')
@@ -131,6 +142,11 @@ class Game:
             if self.ball.ball_in_motion:
                 self.ball.play()
             self.game_over()
+
+    def new_game(self):
+        self.sw.Reset()
+        self.player.enter_name()
+        self.label.configure(text='Click on play to start the game.')
 
     def game_over(self):
         self.label.configure(text='Game over. Click on play to try again.')
@@ -158,20 +174,33 @@ frame = tk.Frame(window)
 frame.pack(side=tk.TOP)
 can = tk.Canvas(window, bg='black', height=600, width=500)
 can.pack(side=tk.TOP, padx=5, pady=5)
-
+lab_Message = tk.Label(frame, text="Click on Game to start a new game", fg="black", font='Helvetica 14')
+lab_Message.pack(side=tk.TOP)
+game = Game(window, can, lab_Message)
 #Menus
 top = tk.Menu(window)
 window.config(menu=top)
+
+game_menu = tk.Menu(top, tearoff=False)
+top.add_cascade(label='Game', menu=game_menu)
+game_menu.add_command(label='New game', command=game.new_game)
+game_menu.add_command(label='Exit', command=window.destroy)
+
+option_menu = tk.Menu(top, tearoff=False)
+top.add_cascade(label='Difficulty', menu=option_menu)
+option_menu.add_command(label='Easy', command=lambda x=0: game.set_difficulty_level(x))
+option_menu.add_command(label='Intermediate', command=lambda x=1: game.set_difficulty_level(x))
+option_menu.add_command(label='Difficult', command=lambda x=2: game.set_difficulty_level(x))
+
 help_menu = tk.Menu(top, tearoff=False)
 top.add_cascade(label='Help', menu=help_menu)
 help_menu.add_command(label='How to play?', command=printRules)
 help_menu.add_command(label='About', command=about)
 
-lab_Message = tk.Label(frame, text="Click on Play to start the game", fg="black", font='Helvetica 14')
-lab_Message.pack(side=tk.TOP)
 
-game = Game(window, can, lab_Message)
-btn = tk.Button(frame, text='Play', command=game.new_game)
+
+
+btn = tk.Button(frame, text='Play', command=game.play)
 btn.pack()
 score_menu = tk.Menu(top, tearoff=False)
 top.add_cascade(label='Score', menu=score_menu)
@@ -179,4 +208,5 @@ score_menu.add_command(label='High scores', command=game.show_stat)
 can.update()
 window.bind("<Left>", game.bar.move_left)
 window.bind("<Right>", game.bar.move_right)
+
 window.mainloop()
