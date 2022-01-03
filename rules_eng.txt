@@ -1,0 +1,5 @@
+GAME GOAL
+Keep the ball in motion
+
+GAMEPLAY
+- Move the bar thanks to the keyboard (left and right arrows).
