@@ -2,6 +2,7 @@ import tkinter as tk
 import random
 import time
 from stopwatch import StopWatch
+from help_functions import about, printRules
 Refresh_Sec = 0.005
 Ball_min_movement = 1
 colors = ['red', 'green', 'yellow', 'blue']
@@ -116,6 +117,12 @@ frame = tk.Frame(window)
 frame.pack(side=tk.TOP)
 can = tk.Canvas(window, bg='black', height=600, width=500)
 can.pack(side=tk.TOP, padx=5, pady=5)
+top = tk.Menu(window)
+window.config(menu=top)
+help_menu = tk.Menu(top, tearoff=False)
+top.add_cascade(label='Help', menu=help_menu)
+help_menu.add_command(label='How to play?', command=printRules)
+help_menu.add_command(label='About', command=about)
 lab_Message = tk.Label(frame, text="Click on Play to start the game", fg="black", font='Helvetica 14')
 lab_Message.pack(side=tk.TOP)
 
