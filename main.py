@@ -1,6 +1,7 @@
 import tkinter as tk
 import random
 import time
+from stopwatch import StopWatch
 Refresh_Sec = 0.005
 Ball_min_movement = 1
 colors = ['red', 'green', 'yellow', 'blue']
@@ -62,6 +63,7 @@ class Ball:
 
     def stop(self):
         self.ball_in_motion = False
+        self.can.delete(self.ball)
 
 
 class Bar:
@@ -85,22 +87,28 @@ class Bar:
             self.can.move(self.bar, -10, 0)
 
 class Game:
-    def __init__(self, can, label):
+    def __init__(self, window, can, label):
+        self.window = window
         self.can = can
         self.label = label
         self.bar = Bar(self.can)
         self.ball = Ball(self.can, self.bar)
+        self.sw = StopWatch(window)
+        self.sw.pack(side=tk.TOP)
 
     def new_game(self):
+        self.sw.Reset()
         self.label.configure(text='Keep the ball in motion!!!')
         self.ball.ball_in_motion = True
-        while self.ball.ball_in_motion:
+        self.sw.Start()
+        if self.ball.ball_in_motion:
             self.ball.play()
-        if not self.ball.ball_in_motion:
-            self.game_over()
+        self.game_over()
 
     def game_over(self):
         self.label.configure(text='Game over. Click on play to try again.')
+        self.sw.Stop()
+
 
 window = tk.Tk()
 window.title("Moving ball")
@@ -108,14 +116,13 @@ frame = tk.Frame(window)
 frame.pack(side=tk.TOP)
 can = tk.Canvas(window, bg='black', height=600, width=500)
 can.pack(side=tk.TOP, padx=5, pady=5)
-lab_Message=tk.Label(frame, text="Click on Play to start the game", fg="black", font='Helvetica 14')
+lab_Message = tk.Label(frame, text="Click on Play to start the game", fg="black", font='Helvetica 14')
 lab_Message.pack(side=tk.TOP)
 
-'''bar = Bar(can)
-ball = Ball(can, bar)'''
-game = Game(can, lab_Message)
+game = Game(window, can, lab_Message)
 btn = tk.Button(frame, text='Play', command=game.new_game)
 btn.pack()
+
 can.update()
 window.bind("<Left>", game.bar.move_left)
 window.bind("<Right>", game.bar.move_right)
