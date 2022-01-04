@@ -74,7 +74,6 @@ class Bar:
         self.can = can
         self.width = 50
         self.height = 10
-        print(self.can.winfo_width())
         self.x = (self.can.winfo_width() - self.width) / 2
         self.y = 550
         self.bar = self.can.create_rectangle(self.x, self.y, self.x + self.width, self.y + self.height,
@@ -133,7 +132,6 @@ class Game:
         self.score.load_score()
         self.player = Player()
 
-
     def set_difficulty_level(self, option):
         if option == 0:
             self.ball.refresh_Sec = 0.005
@@ -166,7 +164,7 @@ class Game:
 
     def show_stat(self):
         self.stat_window = tk.Toplevel()
-        self.stat_window.title("Statistics")
+        self.stat_window.title("High scores")
         self.stat_window.resizable(False, False)
         stat = self.score.df.head()
         lab_stat = tk.Label(self.stat_window, text=stat, fg="black", font='Helvetica 12')
