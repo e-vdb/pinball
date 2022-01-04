@@ -28,7 +28,7 @@ class Ball:
         self.x = random.randint(0,500)
         self.y = 0
         self.can.delete(self.ball)
-        self.ball = can.create_oval(self.x, self.y, self.x + self.radius, self.y + self.radius, fill='red',
+        self.ball = self.can.create_oval(self.x, self.y, self.x + self.radius, self.y + self.radius, fill='red',
                                     outline='white')
 
     def change_color(self):
@@ -46,6 +46,9 @@ class Ball:
         ball_pos = self.can.coords(self.ball)
         bar_x1, bar_y1, bar_x2, bar_y2 = self.can.coords(self.bar.bar)
         x1, y1, x2, y2 = ball_pos
+        if x1 < 0 or x2 > self.can.winfo_width():
+            self.shift_x = - self.shift_x
+            self.change_color()
         if y2 == bar_y2:
             if (bar_x1 <= x1 <= bar_x2) or (bar_x1 <= x2 <= bar_x2):
                 self.shift_y = - self.shift_y
@@ -54,9 +57,7 @@ class Ball:
             self.change_color()
         elif y2 > self.can.winfo_height():
             self.stop()
-        if x1 < 0 or x2 > self.can.winfo_width():
-            self.shift_x = - self.shift_x
-            self.change_color()
+
 
     def play(self):
         self.reset()
@@ -118,11 +119,10 @@ class Player:
         self.can_play = True
 
 
-class Game:
-    def __init__(self, window, can, label):
-        self.window = window
-        self.can = can
-        self.label = label
+class Game(tk.Frame):
+    def __init__(self, parent=None, **kw):
+        tk.Frame.__init__(self, parent, kw)
+        self.make_widgets()
         self.can.update()
         self.bar = Bar(self.can)
         self.ball = Ball(self.can, self.bar)
@@ -131,6 +131,12 @@ class Game:
         self.score = Score()
         self.score.load_score()
         self.player = Player()
+
+    def make_widgets(self):
+        self.can = tk.Canvas(self, bg='black', height=600, width=500)
+        self.can.pack(side=tk.TOP, padx=5, pady=5)
+        self.label = tk.Label(self, text="Click on Game to start a new game", fg="black", font='Helvetica 14')
+        self.label.pack(side=tk.TOP)
 
     def set_difficulty_level(self, option):
         if option == 0:
@@ -176,16 +182,13 @@ class Game:
         self.stat_window.mainloop()
 
 
-
 window = tk.Tk()
 window.title("Moving ball")
 frame = tk.Frame(window)
 frame.pack(side=tk.TOP)
-can = tk.Canvas(window, bg='black', height=600, width=500)
-can.pack(side=tk.TOP, padx=5, pady=5)
-lab_Message = tk.Label(frame, text="Click on Game to start a new game", fg="black", font='Helvetica 14')
-lab_Message.pack(side=tk.TOP)
-game = Game(window, can, lab_Message)
+
+game = Game(window)
+game.pack(side=tk.TOP)
 #Menus
 top = tk.Menu(window)
 window.config(menu=top)
@@ -214,7 +217,7 @@ btn.pack()
 score_menu = tk.Menu(top, tearoff=False)
 top.add_cascade(label='Score', menu=score_menu)
 score_menu.add_command(label='High scores', command=game.show_stat)
-#can.update()
+
 window.bind("<Left>", game.bar.move_left)
 window.bind("<Right>", game.bar.move_right)
 
