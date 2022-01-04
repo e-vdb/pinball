@@ -74,8 +74,15 @@ class Bar:
         self.can = can
         self.width = 50
         self.height = 10
-        self.x = 100
+        print(self.can.winfo_width())
+        self.x = (self.can.winfo_width() - self.width) / 2
         self.y = 550
+        self.bar = self.can.create_rectangle(self.x, self.y, self.x + self.width, self.y + self.height,
+                                             fill='white', outline='white')
+
+    def center_bar(self):
+        self.can.delete(self.bar)
+        self.x = (self.can.winfo_width() - self.width) / 2
         self.bar = self.can.create_rectangle(self.x, self.y, self.x + self.width, self.y + self.height,
                                              fill='white', outline='white')
 
@@ -117,6 +124,7 @@ class Game:
         self.window = window
         self.can = can
         self.label = label
+        self.can.update()
         self.bar = Bar(self.can)
         self.ball = Ball(self.can, self.bar)
         self.sw = StopWatch(window)
@@ -124,6 +132,7 @@ class Game:
         self.score = Score()
         self.score.load_score()
         self.player = Player()
+
 
     def set_difficulty_level(self, option):
         if option == 0:
@@ -135,6 +144,7 @@ class Game:
 
     def play(self):
         self.sw.Reset()
+        self.bar.center_bar()
         if self.player.can_play:
             self.label.configure(text='Keep the ball in motion!!!')
             self.ball.ball_in_motion = True
@@ -145,6 +155,7 @@ class Game:
 
     def new_game(self):
         self.sw.Reset()
+        self.bar.center_bar()
         self.player.enter_name()
         self.label.configure(text='Click on play to start the game.')
 
@@ -205,7 +216,7 @@ btn.pack()
 score_menu = tk.Menu(top, tearoff=False)
 top.add_cascade(label='Score', menu=score_menu)
 score_menu.add_command(label='High scores', command=game.show_stat)
-can.update()
+#can.update()
 window.bind("<Left>", game.bar.move_left)
 window.bind("<Right>", game.bar.move_right)
 
