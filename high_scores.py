@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 
 class Score:
@@ -8,7 +7,7 @@ class Score:
 
     def create_csv(self):
         # initialize list of lists
-        data = {'Player': ['Player_' + str(i) for i in range(1,6)], 'Time': [0 for i in range(1,6)]}
+        data = {'Player': ['Player_' + str(i) for i in range(1, 6)], 'Time': [0 for i in range(1, 6)]}
         # Create the pandas DataFrame
         self.df = pd.DataFrame(data, columns=['Player', 'Time'])
         self.df.to_csv(self.filepath, index=False)
